@@ -45,6 +45,7 @@ app.use('/api', require('./routes/userRoutes'));
 app.use('/api', require('./routes/generalSettingRoutes'));
 app.use('/api', require('./routes/clientRoutes'));
 app.use('/api', require('./routes/itrYearRoutes'));
+app.use('/api', require('./routes/staffRoutes'));
 
 // 404
 app.use((req, res) => {

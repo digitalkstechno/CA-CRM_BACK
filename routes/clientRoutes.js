@@ -1,22 +1,24 @@
 const express = require('express');
 const router = express.Router();
-const { 
-  getAllClients, 
-  getClientById, 
-  createClient, 
-  updateClient, 
+const {
+  getAllClients,
+  getClientById,
+  createClient,
+  updateClient,
   deleteClient,
   addFamilyMember,
   deleteFamilyMember,
   addDocument,
   deleteDocument,
   uploadDocument,
-  updateDocument
+  updateDocument,
+  searchClients
 } = require('../controllers/clientController');
 const { protect } = require('../middleware/authMiddleware');
 const upload = require('../utils/multerConfig');
 
 router.get('/clients', protect, getAllClients);
+router.get('/clients/search', protect, searchClients);
 router.get('/clients/:id', protect, getClientById);
 router.post('/clients', protect, createClient);
 router.put('/clients/:id', protect, updateClient);

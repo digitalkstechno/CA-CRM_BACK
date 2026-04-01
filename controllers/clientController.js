@@ -215,7 +215,7 @@ exports.uploadDocument = async (req, res) => {
   try {
     const { id } = req.params;
     const { name, category, itrYear, memberId } = req.body;
-    
+
     if (!req.file) {
       return res.status(400).json({ message: 'No file uploaded' });
     }
@@ -227,9 +227,9 @@ exports.uploadDocument = async (req, res) => {
 
     const doc = {
       name: name || req.file.originalname,
-      type: req.file.mimetype.includes('pdf') ? 'PDF' : 
-            req.file.mimetype.includes('image') ? 'Image' : 
-            req.file.mimetype.includes('word') ? 'Word' : 
+      type: req.file.mimetype.includes('pdf') ? 'PDF' :
+            req.file.mimetype.includes('image') ? 'Image' :
+            req.file.mimetype.includes('word') ? 'Word' :
             req.file.mimetype.includes('excel') ? 'Excel' : 'Other',
       size: (req.file.size / (1024 * 1024)).toFixed(2) + ' MB',
       uploadedAt: new Date().toISOString().slice(0, 10),
@@ -250,6 +250,39 @@ exports.uploadDocument = async (req, res) => {
     }
     await client.save();
     res.status(201).json(client);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+/**
+ * @desc    Search clients
+ * @route   GET /api/clients/search
+ * @access  Private
+ */
+exports.searchClients = async (req, res) => {
+  try {
+    const query = req.query.q || '';
+    const limit = parseInt(req.query.limit) || 10;
+
+    if (!query.trim()) {
+      return res.json([]);
+    }
+
+    const filter = {
+      $or: [
+        { name: new RegExp(query.trim(), 'i') },
+        { phone: new RegExp(query.trim(), 'i') },
+        { email: new RegExp(query.trim(), 'i') },
+      ]
+    };
+
+    const clients = await Client.find(filter)
+      .select('name phone email paymentStatus')
+      .limit(limit)
+      .sort({ createdAt: -1 });
+
+    res.json(clients);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
