@@ -77,6 +77,17 @@ exports.getClientById = async (req, res) => {
   }
 };
 
+exports.getClientByIdData = async (req, res) => {
+  try {
+    const client = await Client.findById(req.params.id);
+    
+    res.json(client);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+
 exports.createClient = async (req, res) => {
   try {
     const { name, email, phone, paymentStatus, serviceEnabled } = req.body;
