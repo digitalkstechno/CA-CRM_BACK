@@ -46,3 +46,19 @@ exports.getContactByFamilyDataFetch = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
+
+
+exports.getDocByDataFetch = async (req, res) => {
+    try {
+        const client = await Client.findOne({ isDeleted: false, phone: req.params.phone });
+        if (!client) {
+            return res.status(404).json({ message: 'Client not found' });
+        }
+        let doc = client.documents.map((d, i) => {
+            return { id: i, category: d.category }
+        })
+        res.json({ categories: doc });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
