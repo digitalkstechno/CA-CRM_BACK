@@ -16,15 +16,15 @@ exports.getContactByDataFetch = async (req, res) => {
             dataRecord = person ? { name: person.name, documents: person.documents } : null;
         }
         let document = null;
-        if (req.params.doc != 'ITR' && req.params.doc != 'Other') {
+        if (!req.params.doc.includes('ITR') && req.params.doc.includes('Other')) {
             let data = dataRecord.documents.find(doc => doc.category === req.params.doc);
             document = data ? data : null;
         } else {
-            if (req.params.doc === 'ITR') {
-                let data = dataRecord.documents.find(doc => doc.category === req.params.doc && doc.itrYear === req.query.year);
+            if (req.params.doc.includes('ITR')) {
+                let data = dataRecord.documents.find(doc => doc.category === req.params.doc.split(" = ")[0] && doc.itrYear === req.params.doc.split(" = ")[1]);
                 document = data ? data : null;
-            } else if (req.params.doc === 'Other') {
-                let data = dataRecord.documents.find(doc => doc.category === req.params.doc && doc.subCategory === req.query.cat);
+            } else if (req.params.doc.includes('Other')) {
+                let data = dataRecord.documents.find(doc => doc.category === req.params.doc.split(" = ")[0] && doc.subCategory === req.params.doc.split(" = ")[1]);
                 document = data ? data : null;
             }
         }
@@ -55,7 +55,7 @@ exports.getDocByDataFetch = async (req, res) => {
             return res.status(404).json({ message: 'Client not found' });
         }
         let doc = client.documents.map((d, i) => {
-            return { id: i, category: d.category }
+            return { id: i, category: d.category === 'ITR' ? `${d.category} = ${d.itrYear}` : d.category === 'Other' ? `${d.category} = ${d.subCategory}` : d.category }
         })
         res.json({ categories: doc });
     } catch (error) {
