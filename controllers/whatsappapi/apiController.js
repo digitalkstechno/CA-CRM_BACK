@@ -16,7 +16,9 @@ exports.getContactByDataFetch = async (req, res) => {
             dataRecord = person ? { name: person.name, documents: person.documents } : null;
         }
         let document = null;
-        if (!req.params.doc.includes('ITR') && req.params.doc.includes('Other')) {
+        
+        if (!req.params.doc.includes('ITR') && !req.params.doc.includes('Other')) {
+            console.log(req.params.doc);
             let data = dataRecord.documents.find(doc => doc.category === req.params.doc);
             document = data ? data : null;
         } else {
